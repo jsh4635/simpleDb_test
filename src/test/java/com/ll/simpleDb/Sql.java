@@ -2,21 +2,59 @@ package com.ll.simpleDb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 public class Sql {
 
-    String sql;
+    String sql = "";
 
+    Statement stat;
 
+    public Sql(String sql){
+        this.sql = sql;
+    }
+
+    public Sql(Statement stat){
+        this.stat = stat;
+    }
 
     public Sql append(Object... objects){
+        sql += objects[0].toString();
+        if(objects.length > 1){
+            for (int i = 1; i < objects.length; i++){
+                sql = sql.replaceFirst("\\?", objects[i].toString());
+            }
+        }
+
         return this;
     }
 
     public Sql appendIn(Object... objects){
+        sql += objects[0].toString();
+
+        if(objects.length > 1){
+            String s = "";
+            if(objects[1] instanceof String){
+                s = "'" + objects[1].toString() + "'";
+            }
+            else {
+                s = objects[1].toString();
+            }
+            for(int i = 2; i < objects.length; i++){
+                if(objects[i] instanceof String){
+                    s += ", '" + objects[i].toString() + "'";
+                }else {
+                    s += ", " + objects[i].toString();
+                }
+
+            }
+
+            sql = sql.replace("?", s);
+        }
+
         return this;
     }
 
