@@ -155,7 +155,12 @@ public class Sql {
     }
 
     public String selectString(){
-        return null;
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+            return rs.next() ? rs.getString(1) : null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Boolean selectBoolean(){
