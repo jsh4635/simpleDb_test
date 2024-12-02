@@ -1,6 +1,10 @@
 package com.ll.simpleDb;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ll.Article;
 
 import java.sql.Array;
 import java.sql.ResultSet;
@@ -31,15 +35,22 @@ public class Sql {
     }
 
 
-    public Sql appendIn(String str, Long[] longs){
+    public Sql appendIn(String str, Object[] objects){
         this.sql += str + " ";
 
-        String s = longs[0].toString();
-        for(int i = 1; i < longs.length; i++){
-            s += ", " + longs[i].toString();
-        }
-        this.sql = sql.replace("?", s);
+        if(objects.length > 0){
+            String s = objects[0] instanceof String ? "'" + objects[0] + "' " : objects[0].toString();
+            for(int i = 1; i < objects.length; i++){
+                if(objects[i] instanceof String){
+                    s += ", '" + objects[i] + "'";
+                }
+                else{
+                    s += ", " + objects[i].toString();
+                }
 
+            }
+            this.sql = sql.replace("?", s);
+        }
         return this;
     }
 
@@ -116,8 +127,32 @@ public class Sql {
     }
 
     public <T> List<T> selectRows(Class<T> ignoredTClass){
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            // Local Date Time 설정
+            objectMapper.registerModule(new JavaTimeModule());
+            // boolean 값을 필드의 이름에 맞춰서 변경하기 위한 설정
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            ResultSet rs = this.stat.executeQuery(sql);
 
-        return null;
+            List<T> list = new ArrayList<>();
+
+            while(rs.next()){
+                Map<String, Object> map = new HashMap<>();
+                map.put("id",  rs.getLong(1));
+                map.put("createdDate", rs.getTimestamp(2).toLocalDateTime());
+                map.put("modifiedDate", rs.getTimestamp(3).toLocalDateTime());
+                map.put("title", rs.getString(4));
+                map.put("body", rs.getString(5));
+                map.put("isBlind", rs.getBoolean(6));
+                T t = objectMapper.convertValue(map, ignoredTClass);
+                list.add(t);
+            }
+
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, Object> selectRow(){
@@ -143,7 +178,30 @@ public class Sql {
     }
 
     public <T> T selectRow(Class<T> ignoredTClass){
-        return ignoredTClass.cast(selectRow());
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Local Date Time 설정
+        objectMapper.registerModule(new JavaTimeModule());
+        // boolean 값을 필드의 이름에 맞춰서 변경하기 위한 설정
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+
+            Map<String, Object> map = new HashMap<>();
+            while(rs.next()){
+
+                map.put("id",  rs.getLong(1));
+                map.put("createdDate", rs.getTimestamp(2).toLocalDateTime());
+                map.put("modifiedDate", rs.getTimestamp(3).toLocalDateTime());
+                map.put("title", rs.getString(4));
+                map.put("body", rs.getString(5));
+                map.put("isBlind", rs.getBoolean(6));
+
+            }
+
+            return objectMapper.convertValue(map, ignoredTClass);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public LocalDateTime selectDatetime(){
