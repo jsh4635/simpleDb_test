@@ -84,7 +84,7 @@ public class SimpleDbTest {
         title = '제목 new' ,
         body = '내용 new'
         */
-        sql.append("INSERT INTO article ")
+        sql.append("INSERT INTO article")
                 .append("SET createdDate = NOW()")
                 .append(", modifiedDate = NOW()")
                 .append(", title = ?", "제목 new")
@@ -109,7 +109,7 @@ public class SimpleDbTest {
         SET title = '제목 new'
         WHERE id IN ('0', '1', '2', '3')
         */
-        sql.append("UPDATE article ")
+        sql.append("UPDATE article")
                 .append("SET title = ?", "제목 new")
                 .append("WHERE id IN (?, ?, ?, ?)", 0, 1, 2, 3);
 
@@ -119,28 +119,28 @@ public class SimpleDbTest {
         assertThat(affectedRowsCount).isEqualTo(3);
     }
 
-//    @Test
-//    @DisplayName("delete")
-//    public void t003() {
-//        Sql sql = simpleDb.genSql();
-//
-//        // id가 0, 1, 3인 글 삭제
-//        // id가 0인 글은 없으니, 실제로는 2개의 글이 삭제됨
-//        /*
-//        == rawSql ==
-//        DELETE FROM article
-//        WHERE id IN ('0', '1', '3')
-//        */
-//        sql.append("DELETE")
-//                .append("FROM article")
-//                .append("WHERE id IN (?, ?, ?)", 0, 1, 3);
-//
-//        // 삭제된 row 개수
-//        long affectedRowsCount = sql.delete();
-//
-//        assertThat(affectedRowsCount).isEqualTo(2);
-//    }
-//
+    @Test
+    @DisplayName("delete")
+    public void t003() {
+        Sql sql = simpleDb.genSql();
+
+        // id가 0, 1, 3인 글 삭제
+        // id가 0인 글은 없으니, 실제로는 2개의 글이 삭제됨
+        /*
+        == rawSql ==
+        DELETE FROM article
+        WHERE id IN ('0', '1', '3')
+        */
+        sql.append("DELETE")
+                .append("FROM article")
+                .append("WHERE id IN (?, ?, ?)", 0, 1, 3);
+
+        // 삭제된 row 개수
+        long affectedRowsCount = sql.delete();
+
+        assertThat(affectedRowsCount).isEqualTo(2);
+    }
+
 //    @Test
 //    @DisplayName("selectRows")
 //    public void t004() {
