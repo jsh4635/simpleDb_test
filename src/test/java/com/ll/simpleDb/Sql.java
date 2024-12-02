@@ -56,7 +56,6 @@ public class Sql {
     }
 
     public long insert(){
-        System.out.println(sql);
         try {
             return (long) this.stat.executeUpdate(sql);
         } catch (SQLException e) {
@@ -65,7 +64,11 @@ public class Sql {
     }
 
     public long update(){
-        return 0L;
+        try {
+            return (long) this.stat.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public long delete(){
