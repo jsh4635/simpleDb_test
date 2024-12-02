@@ -19,10 +19,10 @@ public class Sql {
     }
 
     public Sql append(Object... objects){
-        sql += objects[0].toString();
+        sql += objects[0].toString() + " ";
         if(objects.length > 1){
             for (int i = 1; i < objects.length; i++){
-                sql = sql.replaceFirst("\\?", objects[i] instanceof String ? "'" + objects[i] + "'" : objects[i].toString());
+                sql = sql.replaceFirst("\\?", objects[i] instanceof String ? "'" + objects[i] + "'" : objects[i].toString()) + " ";
             }
         }
 
@@ -30,7 +30,7 @@ public class Sql {
     }
 
     public Sql appendIn(Object... objects){
-        sql += objects[0].toString();
+        sql += objects[0].toString() + " ";
 
         if(objects.length > 1){
             String s;
@@ -42,9 +42,9 @@ public class Sql {
             }
             for(int i = 2; i < objects.length; i++){
                 if(objects[i] instanceof String){
-                    s += ", '" + objects[i].toString() + "'";
+                    s += ", '" + objects[i].toString() + "' ";
                 }else {
-                    s += ", " + objects[i].toString();
+                    s += ", " + objects[i].toString() + " ";
                 }
 
             }
@@ -72,7 +72,11 @@ public class Sql {
     }
 
     public long delete(){
-        return 0L;
+        try {
+            return (long) this.stat.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Map<String, Object>> selectRows(){
