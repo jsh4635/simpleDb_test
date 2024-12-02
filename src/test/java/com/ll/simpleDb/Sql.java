@@ -146,7 +146,12 @@ public class Sql {
     }
 
     public Long selectLong(){
-        return 0L;
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+            return rs.next() ? rs.getLong(1) : null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String selectString(){
