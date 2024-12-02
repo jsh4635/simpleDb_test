@@ -111,8 +111,25 @@ public class Sql {
     }
 
     public Map<String, Object> selectRow(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        return null;
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+
+            Map<String, Object> map = new HashMap<>();
+            while(rs.next()){
+
+                map.put("id",  rs.getLong(1));
+                map.put("createdDate", rs.getTimestamp(2).toLocalDateTime());
+                map.put("modifiedDate", rs.getTimestamp(3).toLocalDateTime());
+                map.put("title", rs.getString(4));
+                map.put("body", rs.getString(5));
+                map.put("isBlind", rs.getBoolean(6));
+
+            }
+
+            return map;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public <T> T selectRow(Class<T> ignoredTClass){
