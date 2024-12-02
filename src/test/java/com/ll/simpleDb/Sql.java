@@ -137,7 +137,12 @@ public class Sql {
     }
 
     public LocalDateTime selectDatetime(){
-        return null;
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+            return rs.next() ? rs.getTimestamp(1).toLocalDateTime() : null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Long selectLong(){
