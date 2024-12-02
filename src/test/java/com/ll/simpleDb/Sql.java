@@ -2,14 +2,12 @@ package com.ll.simpleDb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Sql {
 
@@ -32,13 +30,26 @@ public class Sql {
         return this;
     }
 
+
+    public Sql appendIn(String str, Long[] longs){
+        this.sql += str + " ";
+
+        String s = longs[0].toString();
+        for(int i = 1; i < longs.length; i++){
+            s += ", " + longs[i].toString();
+        }
+        this.sql = sql.replace("?", s);
+
+        return this;
+    }
+
     public Sql appendIn(Object... objects){
         sql += objects[0].toString() + " ";
 
         if(objects.length > 1){
             String s;
             if(objects[1] instanceof String){
-                s = "'" + objects[1].toString() + "'";
+                s = "'" + objects[1] + "'";
             }
             else {
                 s = objects[1].toString();
@@ -51,7 +62,6 @@ public class Sql {
                 }
 
             }
-
             sql = sql.replace("?", s);
         }
 
@@ -173,6 +183,19 @@ public class Sql {
     }
 
     public List<Long> selectLongs(){
-        return null;
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+
+            List<Long> list = new ArrayList<>();
+
+            while(rs.next()){
+                long l = rs.getLong(1);
+                list.add(l);
+            }
+
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
