@@ -69,14 +69,26 @@ public class SimpleDb {
     }
 
     public void startTransaction(){
-
+        try{
+            this.conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void commit(){
-
+        try{
+            this.conn.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void rollback(){
-
+        try{
+            this.conn.rollback();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
