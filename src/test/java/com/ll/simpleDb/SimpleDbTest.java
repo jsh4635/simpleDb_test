@@ -84,7 +84,7 @@ public class SimpleDbTest {
         title = '제목 new' ,
         body = '내용 new'
         */
-        sql.append("INSERT INTO article")
+        sql.append("INSERT INTO article ")
                 .append("SET createdDate = NOW()")
                 .append(", modifiedDate = NOW()")
                 .append(", title = ?", "제목 new")

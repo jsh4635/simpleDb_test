@@ -2,6 +2,7 @@ package com.ll.simpleDb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,10 +14,6 @@ public class Sql {
 
     Statement stat;
 
-    public Sql(String sql){
-        this.sql = sql;
-    }
-
     public Sql(Statement stat){
         this.stat = stat;
     }
@@ -25,7 +22,7 @@ public class Sql {
         sql += objects[0].toString();
         if(objects.length > 1){
             for (int i = 1; i < objects.length; i++){
-                sql = sql.replaceFirst("\\?", objects[i].toString());
+                sql = sql.replaceFirst("\\?", objects[i] instanceof String ? "'" + objects[i] + "'" : objects[i].toString());
             }
         }
 
@@ -36,7 +33,7 @@ public class Sql {
         sql += objects[0].toString();
 
         if(objects.length > 1){
-            String s = "";
+            String s;
             if(objects[1] instanceof String){
                 s = "'" + objects[1].toString() + "'";
             }
@@ -59,8 +56,12 @@ public class Sql {
     }
 
     public long insert(){
-
-        return 0L;
+        System.out.println(sql);
+        try {
+            return (long) this.stat.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public long update(){

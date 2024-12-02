@@ -4,12 +4,7 @@ import java.sql.*;
 
 public class SimpleDb {
 
-    private String dbDriver = "com.mysql.jdbc.Driver";
-
-    private String ip;
-    private String id;
-    private String pw;
-    private String dbName;
+    private String dbDriver = "com.mysql.cj.jdbc.Driver";
 
     private boolean devMode;
 
@@ -22,11 +17,6 @@ public class SimpleDb {
     private Statement stmt;
 
     public SimpleDb(String ip, String id, String pw, String dbName) {
-        this.ip = ip;
-        this.id = id;
-        this.pw = pw;
-        this.dbName = dbName;
-
         this.url = "jdbc:mysql://" + ip + ":3306/" + dbName;
 
         try{
@@ -42,7 +32,20 @@ public class SimpleDb {
         this.devMode = devMode;
     }
 
-    public void run(Object... sql){
+    public void run(Object... objects){
+        String s = objects[0].toString();
+
+        if(objects.length > 1){
+            for (int i = 1; i < objects.length; i++){
+                s = s.replaceFirst("\\?", objects[i] instanceof String ? "'" + objects[i] + "'" : objects[i].toString());
+            }
+        }
+
+        try {
+            stmt.execute(s);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
