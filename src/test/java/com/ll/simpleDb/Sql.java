@@ -2,9 +2,12 @@ package com.ll.simpleDb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,7 +83,26 @@ public class Sql {
     }
 
     public List<Map<String, Object>> selectRows(){
-        return null;
+        try {
+            ResultSet rs = this.stat.executeQuery(sql);
+
+            List<Map<String, Object>> list = new ArrayList<>();
+
+            while(rs.next()){
+                Map<String, Object> map = new HashMap<>();
+                map.put("id",  rs.getLong(1));
+                map.put("createdDate", rs.getTimestamp(2).toLocalDateTime());
+                map.put("modifiedDate", rs.getTimestamp(3).toLocalDateTime());
+                map.put("title", rs.getString(4));
+                map.put("body", rs.getString(5));
+                map.put("isBlind", rs.getBoolean(6));
+                list.add(map);
+            }
+
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public <T> List<T> selectRows(Class<T> ignoredTClass){
