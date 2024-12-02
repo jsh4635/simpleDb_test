@@ -21,8 +21,6 @@ public class SimpleDb {
 
     private Statement stmt;
 
-    private PreparedStatement pstmt;
-
     public SimpleDb(String ip, String id, String pw, String dbName) {
         this.ip = ip;
         this.id = id;
@@ -49,7 +47,7 @@ public class SimpleDb {
     }
 
     public Sql genSql(){
-        this.sql = new Sql();
+        this.sql = new Sql(stmt);
 
         return this.sql;
     }
