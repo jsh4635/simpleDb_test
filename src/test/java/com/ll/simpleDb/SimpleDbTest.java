@@ -416,6 +416,7 @@ public class SimpleDbTest {
     }
 
     // 테스트 메서드를 정의하고, 테스트 이름을 지정합니다.
+
     @Test
     @DisplayName("use in multi threading")
     public void t017() throws InterruptedException {
@@ -534,4 +535,5 @@ public class SimpleDbTest {
 
         assertThat(newCount).isEqualTo(oldCount + 1);
     }
+
 }
